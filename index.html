@@ -2,45 +2,44 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  />
-  <title>Tug of War: Mathematics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Tug of War</title>
   <link rel="stylesheet" href="./assets/css/style.css" />
 </head>
 <body>
   <div class="app">
     <header class="topbar">
-      <div class="top-left">
-        <div class="home-icon">🏠</div>
-        <div>HOME</div>
+      <div class="top-title">
+        <div class="sub">5-10岁儿童数学互动</div>
+        <h1>TUG OF WAR : MATHEMATICS</h1>
       </div>
-
-      <div class="title-wrap">
-        <div class="sub-title">edu game</div>
-        <div class="title">TUG OF WAR: MATHEMATICS</div>
-      </div>
-
       <div class="top-actions">
-        <button class="icon-btn" id="soundBtn" title="声音">🔊</button>
-        <button class="icon-btn" id="fullscreenBtn" title="全屏">⛶</button>
-        <button class="icon-btn" id="topRestartBtn" title="重新开始">↻</button>
+        <button id="soundBtn" class="icon-btn">🔊</button>
+        <button id="fullscreenBtn" class="icon-btn">⛶</button>
+        <button id="restartTopBtn" class="icon-btn">↻</button>
       </div>
     </header>
 
     <main class="main">
       <!-- 左队 -->
-      <section class="panel left-panel">
-        <div class="team-header blue">
-          <span>Team 1</span>
-          <span class="score-badge" id="leftBadge">0</span>
+      <section class="panel left">
+        <div class="team-head blue">
+          <div>
+            <small>Team 1</small>
+            <h2>蓝队</h2>
+          </div>
+          <div class="badge" id="leftBadge">0</div>
         </div>
 
-        <div class="question blue" id="leftQuestion">7 + 4 = ?</div>
-        <div class="answer" id="leftAnswer">&nbsp;</div>
+        <div class="q-card">
+          <div class="q-label">当前题目</div>
+          <div class="question" id="leftQuestion">3 + 4 = ?</div>
+        </div>
 
-        <div class="keypad" id="leftPad">
+        <div class="answer-box" id="leftAnswer">0</div>
+        <div class="feedback" id="leftFeedback">准备好了就开始吧。</div>
+
+        <div class="pad" id="leftPad">
           <button data-side="left" data-val="1">1</button>
           <button data-side="left" data-val="2">2</button>
           <button data-side="left" data-val="3">3</button>
@@ -50,8 +49,8 @@
           <button data-side="left" data-val="7">7</button>
           <button data-side="left" data-val="8">8</button>
           <button data-side="left" data-val="9">9</button>
+          <button class="wide" data-side="left" data-val="0">0</button>
           <button class="danger" data-side="left" data-action="clear">✕</button>
-          <button class="zero" data-side="left" data-val="0">0</button>
           <button class="ok" data-side="left" data-action="submit">✓</button>
         </div>
       </section>
@@ -59,111 +58,109 @@
       <!-- 中间 -->
       <section class="center" id="centerPanel">
         <div class="scoreboard">
-          <div class="team-score">
-            <div class="label">Team 1</div>
-            <div class="value" id="leftScore">0</div>
+          <div class="score-item">
+            <div>Team 1</div>
+            <strong id="leftScore">0</strong>
           </div>
-
-          <div class="timer" id="timer">00:00</div>
-
-          <div class="team-score">
-            <div class="label">Team 2</div>
-            <div class="value" id="rightScore">0</div>
+          <div class="score-item timer">
+            <div>计时</div>
+            <strong id="timer">00:00</strong>
           </div>
+          <div class="score-item">
+            <div>Team 2</div>
+            <strong id="rightScore">0</strong>
+          </div>
+        </div>
+
+        <div class="ruler">
+          <span>-7</span><span>-5</span><span>-3</span><span>-1</span>
+          <span>1</span><span>3</span><span>5</span><span>7</span>
         </div>
 
         <div class="arena" id="arena">
-          <div class="win-zone left"></div>
-          <div class="win-zone right"></div>
-          <div class="center-dash"></div>
-          <div class="ground"></div>
+          <div class="mid-line"></div>
+          <div class="rope"></div>
+          <div class="flag"></div>
 
-          <div class="rope-layer">
-            <div class="rope"></div>
-            <div class="flag"></div>
-
-            <div class="team left">
-              <div class="person">
-                <div class="hat"></div>
-                <div class="head"></div>
-                <div class="body shirt-blue">
-                  <div class="arm left-arm"></div>
-                  <div class="arm right-arm"></div>
-                </div>
-                <div class="leg l1"></div>
-                <div class="leg l2"></div>
-              </div>
-
-              <div class="person">
-                <div class="hat"></div>
-                <div class="head"></div>
-                <div class="body shirt-blue">
-                  <div class="arm left-arm"></div>
-                  <div class="arm right-arm"></div>
-                </div>
-                <div class="leg l1"></div>
-                <div class="leg l2"></div>
-              </div>
+          <div class="team left-team">
+            <div class="player p1">
+              <svg viewBox="0 0 120 150">
+                <circle cx="52" cy="25" r="13" fill="#ffd7b0" />
+                <path d="M40 14 L65 8 L74 17 L67 21 Z" fill="#2f2f2f"/>
+                <path d="M36 42 Q52 34 68 42 L74 80 Q54 88 34 80 Z" fill="#1e90ff"/>
+                <path d="M35 50 L18 60" stroke="#ffd7b0" stroke-width="8" stroke-linecap="round"/>
+                <path d="M68 50 L88 58" stroke="#ffd7b0" stroke-width="8" stroke-linecap="round"/>
+                <path d="M50 82 L40 120" stroke="#1f2937" stroke-width="9" stroke-linecap="round"/>
+                <path d="M64 82 L78 120" stroke="#1f2937" stroke-width="9" stroke-linecap="round"/>
+              </svg>
             </div>
-
-            <div class="team right">
-              <div class="person">
-                <div class="hat"></div>
-                <div class="head"></div>
-                <div class="body shirt-orange">
-                  <div class="arm left-arm"></div>
-                  <div class="arm right-arm"></div>
-                </div>
-                <div class="leg l1"></div>
-                <div class="leg l2"></div>
-              </div>
-
-              <div class="person">
-                <div class="hat"></div>
-                <div class="head"></div>
-                <div class="body shirt-orange">
-                  <div class="arm left-arm"></div>
-                  <div class="arm right-arm"></div>
-                </div>
-                <div class="leg l1"></div>
-                <div class="leg l2"></div>
-              </div>
+            <div class="player p2">
+              <svg viewBox="0 0 120 150">
+                <circle cx="52" cy="25" r="13" fill="#ffd7b0" />
+                <path d="M40 14 L65 8 L74 17 L67 21 Z" fill="#2f2f2f"/>
+                <path d="M36 42 Q52 34 68 42 L74 80 Q54 88 34 80 Z" fill="#2196f3"/>
+                <path d="M35 50 L18 60" stroke="#ffd7b0" stroke-width="8" stroke-linecap="round"/>
+                <path d="M68 50 L88 58" stroke="#ffd7b0" stroke-width="8" stroke-linecap="round"/>
+                <path d="M50 82 L40 120" stroke="#1f2937" stroke-width="9" stroke-linecap="round"/>
+                <path d="M64 82 L78 120" stroke="#1f2937" stroke-width="9" stroke-linecap="round"/>
+              </svg>
             </div>
           </div>
 
-          <div class="message" id="message">
-            点击“开始游戏”，左右两队分别输入答案，答对就向自己方向拉绳！
+          <div class="team right-team">
+            <div class="player p1">
+              <svg viewBox="0 0 120 150">
+                <circle cx="52" cy="25" r="13" fill="#ffd7b0" />
+                <path d="M40 14 L65 8 L74 17 L67 21 Z" fill="#2f2f2f"/>
+                <path d="M36 42 Q52 34 68 42 L74 80 Q54 88 34 80 Z" fill="#ff5f2a"/>
+                <path d="M35 50 L18 60" stroke="#ffd7b0" stroke-width="8" stroke-linecap="round"/>
+                <path d="M68 50 L88 58" stroke="#ffd7b0" stroke-width="8" stroke-linecap="round"/>
+                <path d="M50 82 L40 120" stroke="#1f2937" stroke-width="9" stroke-linecap="round"/>
+                <path d="M64 82 L78 120" stroke="#1f2937" stroke-width="9" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="player p2">
+              <svg viewBox="0 0 120 150">
+                <circle cx="52" cy="25" r="13" fill="#ffd7b0" />
+                <path d="M40 14 L65 8 L74 17 L67 21 Z" fill="#2f2f2f"/>
+                <path d="M36 42 Q52 34 68 42 L74 80 Q54 88 34 80 Z" fill="#ff6b35"/>
+                <path d="M35 50 L18 60" stroke="#ffd7b0" stroke-width="8" stroke-linecap="round"/>
+                <path d="M68 50 L88 58" stroke="#ffd7b0" stroke-width="8" stroke-linecap="round"/>
+                <path d="M50 82 L40 120" stroke="#1f2937" stroke-width="9" stroke-linecap="round"/>
+                <path d="M64 82 L78 120" stroke="#1f2937" stroke-width="9" stroke-linecap="round"/>
+              </svg>
+            </div>
           </div>
         </div>
 
-        <div class="center-bottom">
-          <div class="mode-wrap">
-            <button class="btn soft" id="modeBtn">模式：加法</button>
-            <button class="btn soft" id="targetBtn">目标：5步获胜</button>
-          </div>
-
-          <div class="control-wrap">
-            <button class="btn primary" id="startBtn">开始游戏</button>
-            <button class="btn soft" id="restartBtn">重新开始</button>
-          </div>
-
-          <div class="note">
-            支持触摸大屏 · 静态网页可部署 · 答对 +1 分并拉绳一步
-          </div>
+        <div class="center-controls">
+          <button id="modeBtn" class="btn soft">题目：基础模式</button>
+          <button id="targetBtn" class="btn soft">目标：5步获胜</button>
+          <button id="startPauseBtn" class="btn primary">开始游戏</button>
+          <button id="resetBtn" class="btn soft">重新开始</button>
         </div>
+        <div class="msg" id="message">规则：每答对一题，绳结向本队移动1格。</div>
       </section>
 
       <!-- 右队 -->
-      <section class="panel right-panel">
-        <div class="team-header red">
-          <span>Team 2</span>
-          <span class="score-badge" id="rightBadge">0</span>
+      <section class="panel right">
+        <div class="team-head red">
+          <div>
+            <small>Team 2</small>
+            <h2>红队</h2>
+          </div>
+          <div class="badge" id="rightBadge">0</div>
         </div>
 
-        <div class="question red" id="rightQuestion">9 + 6 = ?</div>
-        <div class="answer red" id="rightAnswer">&nbsp;</div>
+        <div class="q-card red-soft">
+          <div class="q-label">当前题目</div>
+          <div class="question" id="rightQuestion">8 + 1 = ?</div>
+        </div>
 
-        <div class="keypad" id="rightPad">
+        <div class="answer-box" id="rightAnswer">0</div>
+        <div class="feedback" id="rightFeedback">已清空答案。</div>
+
+        <div class="pad" id="rightPad">
           <button data-side="right" data-val="1">1</button>
           <button data-side="right" data-val="2">2</button>
           <button data-side="right" data-val="3">3</button>
@@ -173,8 +170,8 @@
           <button data-side="right" data-val="7">7</button>
           <button data-side="right" data-val="8">8</button>
           <button data-side="right" data-val="9">9</button>
+          <button class="wide" data-side="right" data-val="0">0</button>
           <button class="danger" data-side="right" data-action="clear">✕</button>
-          <button class="zero" data-side="right" data-val="0">0</button>
           <button class="ok" data-side="right" data-action="submit">✓</button>
         </div>
       </section>
@@ -183,13 +180,9 @@
 
   <div class="overlay" id="winOverlay">
     <div class="dialog">
-      <h2>游戏结束</h2>
-      <div class="big" id="winnerText">🎉 Team 1 获胜！</div>
+      <h3 id="winnerText">🎉 蓝队获胜！</h3>
       <p id="winnerSub">用时 00:00</p>
-      <div class="actions">
-        <button class="btn primary" id="playAgainBtn">再来一局</button>
-        <button class="btn soft" id="closeOverlayBtn">关闭</button>
-      </div>
+      <button id="playAgainBtn" class="btn primary">再来一局</button>
     </div>
   </div>
 
