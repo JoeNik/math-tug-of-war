@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+  <title>Tug of War: Mathematics</title>
+  <link rel="stylesheet" href="./assets/css/style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="top-left">
+        <div class="home-icon">🏠</div>
+        <div>HOME</div>
+      </div>
+
+      <div class="title-wrap">
+        <div class="sub-title">edu game</div>
+        <div class="title">TUG OF WAR: MATHEMATICS</div>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-btn" id="soundBtn" title="声音">🔊</button>
+        <button class="icon-btn" id="fullscreenBtn" title="全屏">⛶</button>
+        <button class="icon-btn" id="topRestartBtn" title="重新开始">↻</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- 左队 -->
+      <section class="panel left-panel">
+        <div class="team-header blue">
+          <span>Team 1</span>
+          <span class="score-badge" id="leftBadge">0</span>
+        </div>
+
+        <div class="question blue" id="leftQuestion">7 + 4 = ?</div>
+        <div class="answer" id="leftAnswer">&nbsp;</div>
+
+        <div class="keypad" id="leftPad">
+          <button data-side="left" data-val="1">1</button>
+          <button data-side="left" data-val="2">2</button>
+          <button data-side="left" data-val="3">3</button>
+          <button data-side="left" data-val="4">4</button>
+          <button data-side="left" data-val="5">5</button>
+          <button data-side="left" data-val="6">6</button>
+          <button data-side="left" data-val="7">7</button>
+          <button data-side="left" data-val="8">8</button>
+          <button data-side="left" data-val="9">9</button>
+          <button class="danger" data-side="left" data-action="clear">✕</button>
+          <button class="zero" data-side="left" data-val="0">0</button>
+          <button class="ok" data-side="left" data-action="submit">✓</button>
+        </div>
+      </section>
+
+      <!-- 中间 -->
+      <section class="center" id="centerPanel">
+        <div class="scoreboard">
+          <div class="team-score">
+            <div class="label">Team 1</div>
+            <div class="value" id="leftScore">0</div>
+          </div>
+
+          <div class="timer" id="timer">00:00</div>
+
+          <div class="team-score">
+            <div class="label">Team 2</div>
+            <div class="value" id="rightScore">0</div>
+          </div>
+        </div>
+
+        <div class="arena" id="arena">
+          <div class="win-zone left"></div>
+          <div class="win-zone right"></div>
+          <div class="center-dash"></div>
+          <div class="ground"></div>
+
+          <div class="rope-layer">
+            <div class="rope"></div>
+            <div class="flag"></div>
+
+            <div class="team left">
+              <div class="person">
+                <div class="hat"></div>
+                <div class="head"></div>
+                <div class="body shirt-blue">
+                  <div class="arm left-arm"></div>
+                  <div class="arm right-arm"></div>
+                </div>
+                <div class="leg l1"></div>
+                <div class="leg l2"></div>
+              </div>
+
+              <div class="person">
+                <div class="hat"></div>
+                <div class="head"></div>
+                <div class="body shirt-blue">
+                  <div class="arm left-arm"></div>
+                  <div class="arm right-arm"></div>
+                </div>
+                <div class="leg l1"></div>
+                <div class="leg l2"></div>
+              </div>
+            </div>
+
+            <div class="team right">
+              <div class="person">
+                <div class="hat"></div>
+                <div class="head"></div>
+                <div class="body shirt-orange">
+                  <div class="arm left-arm"></div>
+                  <div class="arm right-arm"></div>
+                </div>
+                <div class="leg l1"></div>
+                <div class="leg l2"></div>
+              </div>
+
+              <div class="person">
+                <div class="hat"></div>
+                <div class="head"></div>
+                <div class="body shirt-orange">
+                  <div class="arm left-arm"></div>
+                  <div class="arm right-arm"></div>
+                </div>
+                <div class="leg l1"></div>
+                <div class="leg l2"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="message" id="message">
+            点击“开始游戏”，左右两队分别输入答案，答对就向自己方向拉绳！
+          </div>
+        </div>
+
+        <div class="center-bottom">
+          <div class="mode-wrap">
+            <button class="btn soft" id="modeBtn">模式：加法</button>
+            <button class="btn soft" id="targetBtn">目标：5步获胜</button>
+          </div>
+
+          <div class="control-wrap">
+            <button class="btn primary" id="startBtn">开始游戏</button>
+            <button class="btn soft" id="restartBtn">重新开始</button>
+          </div>
+
+          <div class="note">
+            支持触摸大屏 · 静态网页可部署 · 答对 +1 分并拉绳一步
+          </div>
+        </div>
+      </section>
+
+      <!-- 右队 -->
+      <section class="panel right-panel">
+        <div class="team-header red">
+          <span>Team 2</span>
+          <span class="score-badge" id="rightBadge">0</span>
+        </div>
+
+        <div class="question red" id="rightQuestion">9 + 6 = ?</div>
+        <div class="answer red" id="rightAnswer">&nbsp;</div>
+
+        <div class="keypad" id="rightPad">
+          <button data-side="right" data-val="1">1</button>
+          <button data-side="right" data-val="2">2</button>
+          <button data-side="right" data-val="3">3</button>
+          <button data-side="right" data-val="4">4</button>
+          <button data-side="right" data-val="5">5</button>
+          <button data-side="right" data-val="6">6</button>
+          <button data-side="right" data-val="7">7</button>
+          <button data-side="right" data-val="8">8</button>
+          <button data-side="right" data-val="9">9</button>
+          <button class="danger" data-side="right" data-action="clear">✕</button>
+          <button class="zero" data-side="right" data-val="0">0</button>
+          <button class="ok" data-side="right" data-action="submit">✓</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="overlay" id="winOverlay">
+    <div class="dialog">
+      <h2>游戏结束</h2>
+      <div class="big" id="winnerText">🎉 Team 1 获胜！</div>
+      <p id="winnerSub">用时 00:00</p>
+      <div class="actions">
+        <button class="btn primary" id="playAgainBtn">再来一局</button>
+        <button class="btn soft" id="closeOverlayBtn">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./assets/js/app.js"></script>
+</body>
+</html>
