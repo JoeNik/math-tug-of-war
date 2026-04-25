@@ -80,7 +80,6 @@
         <div class="arena" id="arena">
           <div class="midline"></div>
 
-          <!-- 关键：用一张“拔河条带图”确保人物手和绳子天然连接 -->
           <div class="tug-strip" id="tugStrip">
             <picture>
               <img src="./assets/images/tug-strip.png" alt="拔河人物与绳子" />
@@ -136,6 +135,22 @@
       </section>
     </main>
   </div>
+
+  <!-- 移动端底部导航（仅移动端显示） -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="移动端视图切换">
+    <button class="mnav-btn" data-view="left">
+      🔵 蓝队
+      <em id="mLeftScore">0</em>
+    </button>
+    <button class="mnav-btn active" data-view="center">
+      🪢 战场
+      <em id="mTimer">01:30</em>
+    </button>
+    <button class="mnav-btn" data-view="right">
+      🔴 红队
+      <em id="mRightScore">0</em>
+    </button>
+  </nav>
 
   <div class="overlay" id="winOverlay">
     <div class="dialog">

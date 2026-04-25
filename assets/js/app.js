@@ -24,10 +24,11 @@ const PRESETS = {
 
 const PRESET_KEYS = ["easy", "basic", "advanced"];
 const PRAISE = ["太棒了！", "回答正确！", "真厉害！", "继续加油！", "做得很好！"];
+const MOBILE_BP = 1120;
 
 const state = {
   phase: "idle", // idle | running | paused | ended
-  timer: 90, // 剩余秒数（倒计时）
+  timer: 90,     // 倒计时剩余秒
   timerId: null,
   audio: true,
 
@@ -36,7 +37,9 @@ const state = {
   targets: [5, 7, 10],
 
   durationIndex: 1,
-  durations: [60, 90, 120], // 秒
+  durations: [60, 90, 120],
+
+  mobileView: "center",
 
   rope: 0,
   left: { input: "0", answer: 0, score: 0, lastType: "" },
@@ -79,7 +82,13 @@ const els = {
   winnerText: $("winnerText"),
   winnerSub: $("winnerSub"),
   loserText: $("loserText"),
-  playAgainBtn: $("playAgainBtn")
+  playAgainBtn: $("playAgainBtn"),
+
+  layout: document.querySelector(".layout"),
+  mobileNav: $("mobileNav"),
+  mLeftScore: $("mLeftScore"),
+  mTimer: $("mTimer"),
+  mRightScore: $("mRightScore")
 };
 
 function isRunning() {
@@ -106,6 +115,9 @@ function fmt(sec) {
   const s = String(safe % 60).padStart(2, "0");
   return `${m}:${s}`;
 }
+function isMobile() {
+  return window.innerWidth <= MOBILE_BP;
+}
 
 function beep(type = "ok") {
   if (!state.audio) return;
@@ -130,6 +142,40 @@ function setFeedback(side, text, cls = "") {
   el.textContent = text;
 }
 
+function renderMobileNav() {
+  if (!els.mobileNav) return;
+
+  if (els.mLeftScore) els.mLeftScore.textContent = state.left.score;
+  if (els.mRightScore) els.mRightScore.textContent = state.right.score;
+  if (els.mTimer) els.mTimer.textContent = fmt(state.timer);
+
+  const btns = els.mobileNav.querySelectorAll(".mnav-btn");
+  btns.forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.view === state.mobileView);
+  });
+}
+
+function setMobileView(view) {
+  state.mobileView = view;
+  if (!els.layout) return;
+
+  els.layout.classList.remove("mobile-view-left", "mobile-view-center", "mobile-view-right");
+  if (isMobile()) {
+    els.layout.classList.add(`mobile-view-${view}`);
+  }
+  renderMobileNav();
+}
+
+function syncResponsiveMode() {
+  if (!els.layout) return;
+  if (isMobile()) {
+    setMobileView(state.mobileView || "center");
+  } else {
+    els.layout.classList.remove("mobile-view-left", "mobile-view-center", "mobile-view-right");
+  }
+  renderMobileNav();
+}
+
 function renderButtons() {
   els.modeBtn.textContent = `题目：${currentPreset().label}`;
   els.targetBtn.textContent = `目标：${currentTarget()}题获胜`;
@@ -140,6 +186,8 @@ function renderButtons() {
   if (state.phase === "running") els.startPauseBtn.textContent = "暂停";
   if (state.phase === "paused") els.startPauseBtn.textContent = "继续";
   if (state.phase === "ended") els.startPauseBtn.textContent = "开始游戏";
+
+  renderMobileNav();
 }
 
 function renderScores() {
@@ -147,6 +195,7 @@ function renderScores() {
   els.rightScore.textContent = state.right.score;
   els.leftBadge.textContent = state.left.score;
   els.rightBadge.textContent = state.right.score;
+  renderMobileNav();
 }
 
 function renderAnswers() {
@@ -183,10 +232,9 @@ function startTimer() {
 
     state.timer -= 1;
     els.timer.textContent = fmt(state.timer);
+    if (els.mTimer) els.mTimer.textContent = fmt(state.timer);
 
-    if (state.timer <= 0) {
-      onTimeUp();
-    }
+    if (state.timer <= 0) onTimeUp();
   }, 1000);
 }
 
@@ -200,7 +248,6 @@ function generateQuestion(side) {
   let ops = [...p.operators];
   const last = state[side].lastType;
 
-  // 避免连续同类型
   if (last) {
     const filtered = ops.filter((x) => x !== last);
     if (filtered.length) ops = filtered;
@@ -247,9 +294,7 @@ function generateQuestion(side) {
 
 function checkTargetWin() {
   const target = currentTarget();
-  if (state.left.score >= target && state.right.score >= target) {
-    return endGame("draw", "target");
-  }
+  if (state.left.score >= target && state.right.score >= target) return endGame("draw", "target");
   if (state.left.score >= target) return endGame("left", "target");
   if (state.right.score >= target) return endGame("right", "target");
 }
@@ -322,7 +367,6 @@ function submit(side) {
     generateQuestion(side);
     renderAnswers();
 
-    // 目标分数优先判胜
     checkTargetWin();
   } else {
     shakeQ(side);
@@ -349,7 +393,7 @@ function appendInput(side, n) {
   const team = state[side];
 
   if (team.input === "0") team.input = n;
-  else if (team.input.length < 2) team.input += n; // 儿童版限制2位
+  else if (team.input.length < 2) team.input += n;
   renderAnswers();
 }
 
@@ -463,6 +507,9 @@ function resetGame() {
   setFeedback("left", "准备好了就开始吧。");
   setFeedback("right", "准备好了就开始吧。");
   els.message.textContent = "规则：先答到目标题数立即获胜；若倒计时结束，答对更多者获胜。";
+
+  syncResponsiveMode();
+  renderMobileNav();
 }
 
 function bindEvents() {
@@ -483,7 +530,18 @@ function bindEvents() {
     els.winOverlay.classList.remove("show");
     resetGame();
   });
+
+  if (els.mobileNav) {
+    els.mobileNav.addEventListener("click", (e) => {
+      const btn = e.target.closest(".mnav-btn");
+      if (!btn) return;
+      setMobileView(btn.dataset.view);
+    });
+  }
+
+  window.addEventListener("resize", syncResponsiveMode);
 }
 
 bindEvents();
 resetGame();
+syncResponsiveMode();
