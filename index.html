@@ -2,63 +2,29 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>拔河数学游戏（PNG素材版）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>拔河数学游戏 · 同屏双队版</title>
   <link rel="stylesheet" href="./assets/css/style.css" />
 </head>
 <body>
   <div class="app">
     <header class="topbar">
       <div class="title-wrap">
-        <div class="sub">5–10岁 · 加减乘课堂互动</div>
+        <div class="sub">5–10岁 · 双队同屏作答</div>
         <h1>TUG OF WAR : MATHEMATICS</h1>
       </div>
       <div class="top-actions">
-        <button id="soundBtn" class="icon-btn">🔊</button>
-        <button id="fullscreenBtn" class="icon-btn">⛶</button>
-        <button id="topResetBtn" class="icon-btn">↻</button>
+        <button id="soundBtn" class="icon-btn" title="声音">🔊</button>
+        <button id="fullscreenBtn" class="icon-btn" title="全屏">⛶</button>
+        <button id="topResetBtn" class="icon-btn" title="重置">↻</button>
       </div>
     </header>
 
-    <main class="layout">
-      <!-- 左队 -->
-      <section class="panel blue-panel">
-        <div class="team-head blue">
-          <div>
-            <small>Team 1</small>
-            <h2>蓝队</h2>
-          </div>
-          <div class="badge" id="leftBadge">0</div>
-        </div>
-
-        <div class="qbox" id="leftQBox">
-          <div class="q-title">当前题目</div>
-          <div class="question" id="leftQuestion">3 + 4 = ?</div>
-        </div>
-
-        <div class="answer" id="leftAnswer">0</div>
-        <div class="feedback" id="leftFeedback">准备好了就开始吧。</div>
-
-        <div class="pad" id="leftPad">
-          <button data-side="left" data-val="1">1</button>
-          <button data-side="left" data-val="2">2</button>
-          <button data-side="left" data-val="3">3</button>
-          <button data-side="left" data-val="4">4</button>
-          <button data-side="left" data-val="5">5</button>
-          <button data-side="left" data-val="6">6</button>
-          <button data-side="left" data-val="7">7</button>
-          <button data-side="left" data-val="8">8</button>
-          <button data-side="left" data-val="9">9</button>
-          <button class="wide" data-side="left" data-val="0">0</button>
-          <button class="danger" data-side="left" data-action="clear">✕</button>
-          <button class="ok" data-side="left" data-action="submit">✓</button>
-        </div>
-      </section>
-
-      <!-- 中间 -->
-      <section class="center">
+    <main class="game-shell">
+      <!-- 顶部信息区 -->
+      <section class="hud">
         <div class="score-row">
-          <div class="score-card">
+          <div class="score-card blue-lite">
             <span>Team 1</span>
             <strong id="leftScore">0</strong>
           </div>
@@ -66,24 +32,9 @@
             <span>倒计时</span>
             <strong id="timer">01:30</strong>
           </div>
-          <div class="score-card">
+          <div class="score-card red-lite">
             <span>Team 2</span>
             <strong id="rightScore">0</strong>
-          </div>
-        </div>
-
-        <div class="ruler">
-          <span>-7</span><span>-5</span><span>-3</span><span>-1</span>
-          <span>1</span><span>3</span><span>5</span><span>7</span>
-        </div>
-
-        <div class="arena" id="arena">
-          <div class="midline"></div>
-
-          <div class="tug-strip" id="tugStrip">
-            <picture>
-              <img src="./assets/images/tug-strip.png" alt="拔河人物与绳子" />
-            </picture>
           </div>
         </div>
 
@@ -100,57 +51,92 @@
         </div>
       </section>
 
-      <!-- 右队 -->
-      <section class="panel red-panel">
-        <div class="team-head red">
-          <div>
-            <small>Team 2</small>
-            <h2>红队</h2>
+      <!-- 拔河区 -->
+      <section class="arena-wrap">
+        <div class="ruler">
+          <span>-7</span><span>-5</span><span>-3</span><span>-1</span>
+          <span>1</span><span>3</span><span>5</span><span>7</span>
+        </div>
+        <div class="arena" id="arena">
+          <div class="midline"></div>
+          <div class="tug-strip" id="tugStrip">
+            <img src="./assets/images/tug-strip.png" alt="拔河人物与绳子" />
           </div>
-          <div class="badge red-badge" id="rightBadge">0</div>
         </div>
+      </section>
 
-        <div class="qbox red-soft" id="rightQBox">
-          <div class="q-title">当前题目</div>
-          <div class="question" id="rightQuestion">8 + 1 = ?</div>
-        </div>
+      <!-- 同屏双队答题区 -->
+      <section class="battle-board">
+        <!-- 左队 -->
+        <section class="team-panel blue-panel">
+          <div class="team-head blue">
+            <div>
+              <small>Team 1</small>
+              <h2>蓝队</h2>
+            </div>
+            <div class="badge" id="leftBadge">0</div>
+          </div>
 
-        <div class="answer" id="rightAnswer">0</div>
-        <div class="feedback" id="rightFeedback">已清空答案。</div>
+          <div class="qbox" id="leftQBox">
+            <div class="q-title">当前题目</div>
+            <div class="question" id="leftQuestion">3 + 4 = ?</div>
+          </div>
 
-        <div class="pad" id="rightPad">
-          <button data-side="right" data-val="1">1</button>
-          <button data-side="right" data-val="2">2</button>
-          <button data-side="right" data-val="3">3</button>
-          <button data-side="right" data-val="4">4</button>
-          <button data-side="right" data-val="5">5</button>
-          <button data-side="right" data-val="6">6</button>
-          <button data-side="right" data-val="7">7</button>
-          <button data-side="right" data-val="8">8</button>
-          <button data-side="right" data-val="9">9</button>
-          <button class="wide" data-side="right" data-val="0">0</button>
-          <button class="danger" data-side="right" data-action="clear">✕</button>
-          <button class="ok" data-side="right" data-action="submit">✓</button>
-        </div>
+          <div class="answer" id="leftAnswer">0</div>
+          <div class="feedback" id="leftFeedback">准备好了就开始吧。</div>
+
+          <div class="pad" id="leftPad">
+            <button data-side="left" data-val="1">1</button>
+            <button data-side="left" data-val="2">2</button>
+            <button data-side="left" data-val="3">3</button>
+            <button data-side="left" data-val="4">4</button>
+            <button data-side="left" data-val="5">5</button>
+            <button data-side="left" data-val="6">6</button>
+            <button data-side="left" data-val="7">7</button>
+            <button data-side="left" data-val="8">8</button>
+            <button data-side="left" data-val="9">9</button>
+            <button class="wide" data-side="left" data-val="0">0</button>
+            <button class="danger" data-side="left" data-action="clear">✕</button>
+            <button class="ok" data-side="left" data-action="submit">✓</button>
+          </div>
+        </section>
+
+        <!-- 右队 -->
+        <section class="team-panel red-panel">
+          <div class="team-head red">
+            <div>
+              <small>Team 2</small>
+              <h2>红队</h2>
+            </div>
+            <div class="badge red-badge" id="rightBadge">0</div>
+          </div>
+
+          <div class="qbox red-soft" id="rightQBox">
+            <div class="q-title">当前题目</div>
+            <div class="question" id="rightQuestion">8 + 1 = ?</div>
+          </div>
+
+          <div class="answer" id="rightAnswer">0</div>
+          <div class="feedback" id="rightFeedback">准备好了就开始吧。</div>
+
+          <div class="pad" id="rightPad">
+            <button data-side="right" data-val="1">1</button>
+            <button data-side="right" data-val="2">2</button>
+            <button data-side="right" data-val="3">3</button>
+            <button data-side="right" data-val="4">4</button>
+            <button data-side="right" data-val="5">5</button>
+            <button data-side="right" data-val="6">6</button>
+            <button data-side="right" data-val="7">7</button>
+            <button data-side="right" data-val="8">8</button>
+            <button data-side="right" data-val="9">9</button>
+            <button class="wide" data-side="right" data-val="0">0</button>
+            <button class="danger" data-side="right" data-action="clear">✕</button>
+            <button class="ok" data-side="right" data-action="submit">✓</button>
+          </div>
+        </section>
       </section>
     </main>
   </div>
-
-  <!-- 移动端底部导航（仅移动端显示） -->
-  <nav class="mobile-nav" id="mobileNav" aria-label="移动端视图切换">
-    <button class="mnav-btn" data-view="left">
-      🔵 蓝队
-      <em id="mLeftScore">0</em>
-    </button>
-    <button class="mnav-btn active" data-view="center">
-      🪢 战场
-      <em id="mTimer">01:30</em>
-    </button>
-    <button class="mnav-btn" data-view="right">
-      🔴 红队
-      <em id="mRightScore">0</em>
-    </button>
-  </nav>
 
   <div class="overlay" id="winOverlay">
     <div class="dialog">

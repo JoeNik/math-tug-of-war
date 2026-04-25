@@ -24,11 +24,10 @@ const PRESETS = {
 
 const PRESET_KEYS = ["easy", "basic", "advanced"];
 const PRAISE = ["太棒了！", "回答正确！", "真厉害！", "继续加油！", "做得很好！"];
-const MOBILE_BP = 1120;
 
 const state = {
   phase: "idle", // idle | running | paused | ended
-  timer: 90,     // 倒计时剩余秒
+  timer: 90, // 剩余倒计时（秒）
   timerId: null,
   audio: true,
 
@@ -39,14 +38,13 @@ const state = {
   durationIndex: 1,
   durations: [60, 90, 120],
 
-  mobileView: "center",
-
   rope: 0,
   left: { input: "0", answer: 0, score: 0, lastType: "" },
   right: { input: "0", answer: 0, score: 0, lastType: "" }
 };
 
 const $ = (id) => document.getElementById(id);
+
 const els = {
   leftQuestion: $("leftQuestion"),
   rightQuestion: $("rightQuestion"),
@@ -82,13 +80,7 @@ const els = {
   winnerText: $("winnerText"),
   winnerSub: $("winnerSub"),
   loserText: $("loserText"),
-  playAgainBtn: $("playAgainBtn"),
-
-  layout: document.querySelector(".layout"),
-  mobileNav: $("mobileNav"),
-  mLeftScore: $("mLeftScore"),
-  mTimer: $("mTimer"),
-  mRightScore: $("mRightScore")
+  playAgainBtn: $("playAgainBtn")
 };
 
 function isRunning() {
@@ -115,9 +107,6 @@ function fmt(sec) {
   const s = String(safe % 60).padStart(2, "0");
   return `${m}:${s}`;
 }
-function isMobile() {
-  return window.innerWidth <= MOBILE_BP;
-}
 
 function beep(type = "ok") {
   if (!state.audio) return;
@@ -131,49 +120,16 @@ function beep(type = "ok") {
 
     osc.frequency.value = type === "ok" ? 760 : type === "win" ? 980 : 230;
     gain.gain.value = 0.06;
+
     osc.start();
     osc.stop(ctx.currentTime + (type === "win" ? 0.2 : 0.12));
-  } catch (e) {}
+  } catch (_) {}
 }
 
 function setFeedback(side, text, cls = "") {
   const el = side === "left" ? els.leftFeedback : els.rightFeedback;
   el.className = `feedback ${cls}`.trim();
   el.textContent = text;
-}
-
-function renderMobileNav() {
-  if (!els.mobileNav) return;
-
-  if (els.mLeftScore) els.mLeftScore.textContent = state.left.score;
-  if (els.mRightScore) els.mRightScore.textContent = state.right.score;
-  if (els.mTimer) els.mTimer.textContent = fmt(state.timer);
-
-  const btns = els.mobileNav.querySelectorAll(".mnav-btn");
-  btns.forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.view === state.mobileView);
-  });
-}
-
-function setMobileView(view) {
-  state.mobileView = view;
-  if (!els.layout) return;
-
-  els.layout.classList.remove("mobile-view-left", "mobile-view-center", "mobile-view-right");
-  if (isMobile()) {
-    els.layout.classList.add(`mobile-view-${view}`);
-  }
-  renderMobileNav();
-}
-
-function syncResponsiveMode() {
-  if (!els.layout) return;
-  if (isMobile()) {
-    setMobileView(state.mobileView || "center");
-  } else {
-    els.layout.classList.remove("mobile-view-left", "mobile-view-center", "mobile-view-right");
-  }
-  renderMobileNav();
 }
 
 function renderButtons() {
@@ -186,8 +142,6 @@ function renderButtons() {
   if (state.phase === "running") els.startPauseBtn.textContent = "暂停";
   if (state.phase === "paused") els.startPauseBtn.textContent = "继续";
   if (state.phase === "ended") els.startPauseBtn.textContent = "开始游戏";
-
-  renderMobileNav();
 }
 
 function renderScores() {
@@ -195,7 +149,6 @@ function renderScores() {
   els.rightScore.textContent = state.right.score;
   els.leftBadge.textContent = state.left.score;
   els.rightBadge.textContent = state.right.score;
-  renderMobileNav();
 }
 
 function renderAnswers() {
@@ -204,7 +157,7 @@ function renderAnswers() {
 }
 
 function renderRope() {
-  document.documentElement.style.setProperty("--shift", `${state.rope * 40}px`);
+  document.documentElement.style.setProperty("--shift", `${state.rope * 34}px`);
 }
 
 function setRunningVisual(isRun) {
@@ -215,7 +168,7 @@ function pulsePull(side) {
   els.arena.classList.remove("pull-left", "pull-right");
   void els.arena.offsetWidth;
   els.arena.classList.add(side === "left" ? "pull-left" : "pull-right");
-  setTimeout(() => els.arena.classList.remove("pull-left", "pull-right"), 240);
+  setTimeout(() => els.arena.classList.remove("pull-left", "pull-right"), 220);
 }
 
 function shakeQ(side) {
@@ -229,11 +182,8 @@ function startTimer() {
   clearInterval(state.timerId);
   state.timerId = setInterval(() => {
     if (state.phase !== "running") return;
-
     state.timer -= 1;
     els.timer.textContent = fmt(state.timer);
-    if (els.mTimer) els.mTimer.textContent = fmt(state.timer);
-
     if (state.timer <= 0) onTimeUp();
   }, 1000);
 }
@@ -366,7 +316,6 @@ function submit(side) {
     beep("ok");
     generateQuestion(side);
     renderAnswers();
-
     checkTargetWin();
   } else {
     shakeQ(side);
@@ -384,14 +333,13 @@ function submit(side) {
         generateQuestion(side);
         renderAnswers();
       }
-    }, 850);
+    }, 780);
   }
 }
 
 function appendInput(side, n) {
   if (!isRunning()) return;
   const team = state[side];
-
   if (team.input === "0") team.input = n;
   else if (team.input.length < 2) team.input += n;
   renderAnswers();
@@ -406,7 +354,6 @@ function clearInput(side) {
 function handlePadClick(e) {
   const btn = e.target.closest("button");
   if (!btn) return;
-
   const side = btn.dataset.side;
   if (!side) return;
 
@@ -480,7 +427,7 @@ async function toggleFullscreen() {
   try {
     if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
     else await document.exitFullscreen();
-  } catch (e) {}
+  } catch (_) {}
 }
 
 function resetGame() {
@@ -507,9 +454,6 @@ function resetGame() {
   setFeedback("left", "准备好了就开始吧。");
   setFeedback("right", "准备好了就开始吧。");
   els.message.textContent = "规则：先答到目标题数立即获胜；若倒计时结束，答对更多者获胜。";
-
-  syncResponsiveMode();
-  renderMobileNav();
 }
 
 function bindEvents() {
@@ -530,18 +474,7 @@ function bindEvents() {
     els.winOverlay.classList.remove("show");
     resetGame();
   });
-
-  if (els.mobileNav) {
-    els.mobileNav.addEventListener("click", (e) => {
-      const btn = e.target.closest(".mnav-btn");
-      if (!btn) return;
-      setMobileView(btn.dataset.view);
-    });
-  }
-
-  window.addEventListener("resize", syncResponsiveMode);
 }
 
 bindEvents();
 resetGame();
-syncResponsiveMode();
