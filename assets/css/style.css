@@ -187,10 +187,32 @@ button{font-family:inherit;border:none;cursor:pointer}
 }
 .overlay.show{display:flex}
 .dialog{
-  width:360px;background:#fff;border-radius:18px;padding:20px;text-align:center;
+  width:380px;background:#fff;border-radius:18px;padding:20px;text-align:center;
+  animation:popIn .28s ease;
 }
-.dialog h3{margin:0 0 8px;font-size:30px}
-.dialog p{margin:0 0 16px;color:#667f9b}
+.dialog h3{
+  margin:0 0 8px;font-size:30px;
+  animation:glow .9s ease-in-out infinite alternate;
+}
+.dialog p{margin:0 0 12px;color:#667f9b}
+.loser-text{
+  font-weight:800;
+  color:#e67e22 !important;
+  animation:bounceSoft .9s ease-in-out infinite;
+}
+
+@keyframes popIn{
+  from{transform:scale(.92);opacity:.2}
+  to{transform:scale(1);opacity:1}
+}
+@keyframes glow{
+  from{text-shadow:0 0 0 rgba(31,143,255,0)}
+  to{text-shadow:0 0 14px rgba(31,143,255,.35)}
+}
+@keyframes bounceSoft{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-4px)}
+}
 
 @media (max-width: 1120px){
   .layout{grid-template-columns:1fr}

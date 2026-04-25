@@ -63,8 +63,8 @@
             <strong id="leftScore">0</strong>
           </div>
           <div class="score-card timer-card">
-            <span>计时</span>
-            <strong id="timer">00:00</strong>
+            <span>倒计时</span>
+            <strong id="timer">01:30</strong>
           </div>
           <div class="score-card">
             <span>Team 2</span>
@@ -90,12 +90,15 @@
 
         <div class="controls">
           <button id="modeBtn" class="btn soft">题目：基础模式</button>
-          <button id="targetBtn" class="btn soft">目标：5步获胜</button>
+          <button id="targetBtn" class="btn soft">目标：5题获胜</button>
+          <button id="timeBtn" class="btn soft">倒计时：90秒</button>
           <button id="startPauseBtn" class="btn primary">开始游戏</button>
           <button id="resetBtn" class="btn soft">重新开始</button>
         </div>
 
-        <div class="msg" id="message">规则：每答对一题，绳结向本队移动1格。</div>
+        <div class="msg" id="message">
+          规则：先答对到目标题数立即获胜；若倒计时结束，答对更多者获胜。
+        </div>
       </section>
 
       <!-- 右队 -->
@@ -137,7 +140,8 @@
   <div class="overlay" id="winOverlay">
     <div class="dialog">
       <h3 id="winnerText">🎉 蓝队获胜！</h3>
-      <p id="winnerSub">用时 00:00</p>
+      <p id="winnerSub">先到目标 · 比分 0:0</p>
+      <p id="loserText" class="loser-text">红队别灰心，你们也很棒，继续加油！💪</p>
       <button id="playAgainBtn" class="btn primary">再来一局</button>
     </div>
   </div>

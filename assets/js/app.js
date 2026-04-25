@@ -27,12 +27,17 @@ const PRAISE = ["太棒了！", "回答正确！", "真厉害！", "继续加油
 
 const state = {
   phase: "idle", // idle | running | paused | ended
-  timer: 0,
+  timer: 90, // 剩余秒数（倒计时）
   timerId: null,
   audio: true,
+
   presetKey: "basic",
   targetIndex: 0,
   targets: [5, 7, 10],
+
+  durationIndex: 1,
+  durations: [60, 90, 120], // 秒
+
   rope: 0,
   left: { input: "0", answer: 0, score: 0, lastType: "" },
   right: { input: "0", answer: 0, score: 0, lastType: "" }
@@ -57,6 +62,7 @@ const els = {
 
   modeBtn: $("modeBtn"),
   targetBtn: $("targetBtn"),
+  timeBtn: $("timeBtn"),
   startPauseBtn: $("startPauseBtn"),
   resetBtn: $("resetBtn"),
   topResetBtn: $("topResetBtn"),
@@ -72,6 +78,7 @@ const els = {
   winOverlay: $("winOverlay"),
   winnerText: $("winnerText"),
   winnerSub: $("winnerSub"),
+  loserText: $("loserText"),
   playAgainBtn: $("playAgainBtn")
 };
 
@@ -80,6 +87,9 @@ function isRunning() {
 }
 function currentTarget() {
   return state.targets[state.targetIndex];
+}
+function currentDuration() {
+  return state.durations[state.durationIndex];
 }
 function currentPreset() {
   return PRESETS[state.presetKey];
@@ -91,8 +101,9 @@ function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 function fmt(sec) {
-  const m = String(Math.floor(sec / 60)).padStart(2, "0");
-  const s = String(sec % 60).padStart(2, "0");
+  const safe = Math.max(0, sec);
+  const m = String(Math.floor(safe / 60)).padStart(2, "0");
+  const s = String(safe % 60).padStart(2, "0");
   return `${m}:${s}`;
 }
 
@@ -108,7 +119,6 @@ function beep(type = "ok") {
 
     osc.frequency.value = type === "ok" ? 760 : type === "win" ? 980 : 230;
     gain.gain.value = 0.06;
-
     osc.start();
     osc.stop(ctx.currentTime + (type === "win" ? 0.2 : 0.12));
   } catch (e) {}
@@ -122,7 +132,8 @@ function setFeedback(side, text, cls = "") {
 
 function renderButtons() {
   els.modeBtn.textContent = `题目：${currentPreset().label}`;
-  els.targetBtn.textContent = `目标：${currentTarget()}步获胜`;
+  els.targetBtn.textContent = `目标：${currentTarget()}题获胜`;
+  els.timeBtn.textContent = `倒计时：${currentDuration()}秒`;
   els.soundBtn.textContent = state.audio ? "🔊" : "🔇";
 
   if (state.phase === "idle") els.startPauseBtn.textContent = "开始游戏";
@@ -144,7 +155,6 @@ function renderAnswers() {
 }
 
 function renderRope() {
-  // 每分移动 40px，可按图片比例调整
   document.documentElement.style.setProperty("--shift", `${state.rope * 40}px`);
 }
 
@@ -170,8 +180,13 @@ function startTimer() {
   clearInterval(state.timerId);
   state.timerId = setInterval(() => {
     if (state.phase !== "running") return;
-    state.timer += 1;
+
+    state.timer -= 1;
     els.timer.textContent = fmt(state.timer);
+
+    if (state.timer <= 0) {
+      onTimeUp();
+    }
   }, 1000);
 }
 
@@ -230,23 +245,56 @@ function generateQuestion(side) {
   else els.rightQuestion.textContent = text;
 }
 
-function checkWin() {
+function checkTargetWin() {
   const target = currentTarget();
-  if (state.rope <= -target) return endGame("left");
-  if (state.rope >= target) return endGame("right");
+  if (state.left.score >= target && state.right.score >= target) {
+    return endGame("draw", "target");
+  }
+  if (state.left.score >= target) return endGame("left", "target");
+  if (state.right.score >= target) return endGame("right", "target");
 }
 
-function endGame(winnerSide) {
+function onTimeUp() {
+  if (!isRunning()) return;
+  if (state.left.score > state.right.score) return endGame("left", "timeup");
+  if (state.right.score > state.left.score) return endGame("right", "timeup");
+  return endGame("draw", "timeup");
+}
+
+function endGame(winnerSide, reason = "target") {
   state.phase = "ended";
   stopTimer();
   setRunningVisual(false);
   renderButtons();
 
-  const winner = winnerSide === "left" ? "🔵 蓝队" : "🔴 红队";
-  els.winnerText.textContent = `${winner} 获胜！`;
-  els.winnerSub.textContent = `用时 ${fmt(state.timer)} · 比分 ${state.left.score}:${state.right.score}`;
+  const scoreText = `${state.left.score}:${state.right.score}`;
+  const reasonText =
+    reason === "timeup"
+      ? `倒计时结束 · 比分 ${scoreText}`
+      : `先达到 ${currentTarget()} 题 · 比分 ${scoreText}`;
+
+  if (winnerSide === "draw") {
+    els.winnerText.textContent = "🤝 平局！";
+    els.winnerSub.textContent = reasonText;
+    els.loserText.textContent = "两队都很棒！继续保持！🌟";
+    els.message.textContent = "比赛结束：平局，双方表现都很优秀！";
+    setFeedback("left", "👏 你们都很棒！", "ok");
+    setFeedback("right", "👏 你们都很棒！", "ok");
+  } else {
+    const winner = winnerSide === "left" ? "🔵 蓝队" : "🔴 红队";
+    const loserSide = winnerSide === "left" ? "right" : "left";
+    const loserName = loserSide === "left" ? "蓝队" : "红队";
+
+    els.winnerText.textContent = `${winner} 获胜！`;
+    els.winnerSub.textContent = reasonText;
+    els.loserText.textContent = `${loserName}别灰心，你们也很棒，继续加油！💪`;
+    els.message.textContent = `${winner} 赢下本局！`;
+
+    setFeedback(winnerSide, "🎉 获胜啦！", "ok");
+    setFeedback(loserSide, "💪 没关系，再来一局会更好！", "ok");
+  }
+
   els.winOverlay.classList.add("show");
-  els.message.textContent = `${winner} 赢下本局！`;
   beep("win");
 }
 
@@ -273,7 +321,9 @@ function submit(side) {
     beep("ok");
     generateQuestion(side);
     renderAnswers();
-    checkWin();
+
+    // 目标分数优先判胜
+    checkTargetWin();
   } else {
     shakeQ(side);
     setFeedback(side, `❌ 答错了，正确答案是 ${team.answer}`, "err");
@@ -285,7 +335,6 @@ function submit(side) {
     team.input = "0";
     renderAnswers();
 
-    // 错题反馈后换新题
     setTimeout(() => {
       if (state.phase === "running") {
         generateQuestion(side);
@@ -337,7 +386,7 @@ function startOrPause() {
     setRunningVisual(true);
     setFeedback("left", "开始作答！", "ok");
     setFeedback("right", "开始作答！", "ok");
-    els.message.textContent = "游戏开始！答对把绳结拉向自己！";
+    els.message.textContent = "游戏开始！先答到目标题数，或倒计时结束时分高者获胜！";
     renderButtons();
     return;
   }
@@ -373,6 +422,11 @@ function cycleTarget() {
   resetGame();
 }
 
+function cycleDuration() {
+  state.durationIndex = (state.durationIndex + 1) % state.durations.length;
+  resetGame();
+}
+
 function toggleSound() {
   state.audio = !state.audio;
   renderButtons();
@@ -389,12 +443,12 @@ function resetGame() {
   stopTimer();
 
   state.phase = "idle";
-  state.timer = 0;
+  state.timer = currentDuration();
   state.rope = 0;
   state.left = { input: "0", answer: 0, score: 0, lastType: "" };
   state.right = { input: "0", answer: 0, score: 0, lastType: "" };
 
-  els.timer.textContent = "00:00";
+  els.timer.textContent = fmt(state.timer);
   els.winOverlay.classList.remove("show");
   setRunningVisual(false);
 
@@ -408,7 +462,7 @@ function resetGame() {
 
   setFeedback("left", "准备好了就开始吧。");
   setFeedback("right", "准备好了就开始吧。");
-  els.message.textContent = "规则：每答对一题，绳结向本队移动1格。";
+  els.message.textContent = "规则：先答到目标题数立即获胜；若倒计时结束，答对更多者获胜。";
 }
 
 function bindEvents() {
@@ -421,6 +475,7 @@ function bindEvents() {
 
   els.modeBtn.addEventListener("click", cyclePreset);
   els.targetBtn.addEventListener("click", cycleTarget);
+  els.timeBtn.addEventListener("click", cycleDuration);
   els.soundBtn.addEventListener("click", toggleSound);
   els.fullscreenBtn.addEventListener("click", toggleFullscreen);
 
